@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { search } from "./BooksAPI";
 import SearchResult from "./SearchResult";
 import PropTypes from "prop-types";
 
 function SearchPage(props) {
-  const [, setText] = useState("");
+  const [searchtext, setText] = useState("");
   const [books, setBooks] = useState([]);
 
   let timer = null;
@@ -18,25 +18,25 @@ function SearchPage(props) {
     const searchval = event.target.value;
     clearTimeout(timer);
     timer = setTimeout(() => {
-      //search for Books only if serach text is not blank
-      if (searchval === "") {
-        setText("");
-        setBooks([]);
-      } else {
-        search(searchval).then((x) => {
+      setText(searchval);
+    }, 1000);
+  }
+  useEffect(
+    () => {
+      if (searchtext !== "") {
+        search(searchtext).then((x) => {
           // if result is an instance of Array means the search api has resulted in Books array successfully
           if (x instanceof Array) {
-            setText(searchval);
             setBooks(x);
           } else {
             // else case handles the case if search parameter is invalid or doesnt result in an array.
-            setText(searchval);
             setBooks([]);
           }
         });
       }
-    }, 1000);
-  }
+    },
+    [searchtext]
+  );
 
   function getBookShelfInfo(x) {
     const map = props.dict;
