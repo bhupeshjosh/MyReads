@@ -1,6 +1,6 @@
-import React from "react";
+import React, { Suspense } from "react";
 import * as BooksAPI from "./BooksAPI";
-import SearchPage from "./SearchPage";
+//import SearchPage from "./SearchPage";
 import "./App.css";
 import { Link, Route } from "react-router-dom";
 import BookShelf from "./BookShelf";
@@ -44,13 +44,16 @@ class BooksApp extends React.Component {
     const wanttoread = this.state.booksInShelf.filter(
       (x) => x.shelf === "wantToRead"
     );
+    const SearchPage = React.lazy(() => import("./SearchPage"));
     return (
       <div className="app">
         <Route path={"/search"}>
-          <SearchPage
-            dict={this.bookToShelfMap()}
-            handleChange={this.handleChange}
-          />
+          <Suspense fallback={<div>Loading Search Page ...</div>}>
+            <SearchPage
+              dict={this.bookToShelfMap()}
+              handleChange={this.handleChange}
+            />
+          </Suspense>
         </Route>
         <Route exact path={"/"}>
           <div className="list-books">
